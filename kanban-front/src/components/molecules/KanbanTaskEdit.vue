@@ -5,28 +5,41 @@
     :value="dialog"
   >
     <template v-slot:activator="{ on }">
-      <kanban-delete-btn
+      <v-list-item
         v-on="on"
         v-on:click="dialogOn"
-      />
+      >
+        <v-list-item-icon>
+          <v-icon>mdi-delete</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          削除
+        </v-list-item-content>
+      </v-list-item>
     </template>
     <template v-slot:default>
       <v-card>
         <v-toolbar
           color="error"
           dark
-        >ボード削除</v-toolbar>
-        <v-card-title>以下のボードを削除します</v-card-title>
+        >タスク削除</v-toolbar>
+        <v-card-title>以下のタスクを削除します</v-card-title>
+        <v-divider class="mx-4"></v-divider>
+        <v-card-title>{{ task.taskName }}</v-card-title>
         <v-card-text>
-          <div class="text-h6 pa-1">ID : {{ propBoard.boardId }}</div>
-          <div class="text-h6 pa-1">ボード名 : {{ propBoard.boardName }}</div>
-          <div class="text-h6 pa-1">期間 : {{ propBoard.fromDate }} - {{ propBoard.toDate }}</div>
+          <kanban-task-estimate
+            :taskEstimate="task.taskEstimate"
+            :estimateUnit="task.estimateUnit"
+          />
+          <div>{{ task.taskDescribe }}</div>
         </v-card-text>
         <v-card-actions class="justify-end">
           <kanban-ok-btn
-            v-on:click="updateData"
+            v-on:click="deleteData"
           />
-          <kanban-cancel-btn v-on:click="dialogOff"></kanban-cancel-btn>
+          <kanban-cancel-btn
+            v-on:click="dialogOff"
+          />
         </v-card-actions>
       </v-card>
     </template>
@@ -35,25 +48,21 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
-import KanbanDeleteBtn from '@/components/atoms/KanbanDeleteBtn.vue'
+import KanbanTaskEstimate from '@/components/atoms/KanbanTaskEstimate.vue'
 import KanbanOkBtn from '@/components/atoms/KanbanOkBtn.vue'
 import KanbanCancelBtn from '@/components/atoms/KanbanCancelBtn.vue'
-import { Board } from '@/store/types'
-import { boardStore } from '@/store/modules/board'
+import { Task } from '@/store/types.js'
 
 @Component({
   components: {
-    KanbanDeleteBtn,
+    KanbanTaskEstimate,
     KanbanOkBtn,
     KanbanCancelBtn
   }
 })
-export default class KanbanBoardDelete extends Vue {
+export default class KanbanTaskDelete extends Vue {
   @Prop()
-  propBoard!: Board;
-
-  @Prop()
-  index!: number;
+  task!: Task;
 
   dialog = false
 
@@ -65,8 +74,7 @@ export default class KanbanBoardDelete extends Vue {
     this.dialog = false
   }
 
-  updateData () : void {
-    boardStore.callDeleteBoardApi(this.propBoard.boardId)
+  deleteData () : void {
     this.dialogOff()
   }
 }

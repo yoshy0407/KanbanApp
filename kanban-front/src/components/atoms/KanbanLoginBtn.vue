@@ -6,13 +6,7 @@
       color="primary"
       @click="clickAndLoading"
     >
-      <v-icon
-        left
-        dark
-      >
-        mdi-magnify
-      </v-icon>
-      検索
+      ログイン
     </v-btn>
 </template>
 
@@ -20,7 +14,7 @@
 import { Component, Vue, Emit, Prop } from 'vue-property-decorator'
 
 @Component
-export default class KanbanSearchBtn extends Vue {
+export default class KanbanLoginBtn extends Vue {
   loading = false
 
   @Prop({ default: 3000 })
@@ -36,7 +30,7 @@ export default class KanbanSearchBtn extends Vue {
   }
 
   @Emit('click')
-  click () {
+  click () :void {
     // イベント発行のみ
   }
 }

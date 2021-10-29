@@ -20,25 +20,23 @@
         </thead>
         <tbody>
           <tr
-            v-for="item in boards"
-            :key="item.id"
+            v-for="(item, index) in displayBoards"
+            :key="item.boardId"
           >
-            <td>{{ item.id }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.fromDate }} - {{ item.toDate }}</td>
+            <td>{{ item.boardId}}</td>
+            <td>{{ item.boardName }}</td>
+            <td>{{ parseDate(item.fromDate) }} - {{ parseDate(item.toDate) }}</td>
             <td>
-              <kanban-enter-btn />
+              <kanban-enter-btn
+                :boardId="item.boardId"
+              />
               <kanban-board-edit
-                :id="item.id"
-                :name="item.name"
-                :fromDate="item.fromDate"
-                :toDate="item.toDate"
+                :propBoard="item"
+                :index="index"
               />
               <kanban-board-delete
-                :id="item.id"
-                :name="item.name"
-                :fromDate="item.fromDate"
-                :toDate="item.toDate"
+                :propBoard="item"
+                :index="index"
               />
             </td>
           </tr>
@@ -46,7 +44,10 @@
       </template>
     </v-simple-table>
     <v-divider></v-divider>
-    <kanban-pagination />
+    <kanban-pagination
+      v-model="page"
+      v-bind:pageLength="pageLength"
+     />
   </v-card>
 </template>
 
@@ -55,70 +56,55 @@ import KanbanBoardDelete from '../molecules/KanbanBoardDelete.vue'
 import KanbanBoardEdit from '../molecules/KanbanBoardEdit.vue'
 import KanbanEnterBtn from '../atoms/KanbanEnterBtn.vue'
 import KanbanPagination from '../molecules/KanbanPagination.vue'
+import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Board } from '@/store/types'
 
-import Vue from 'vue'
-export default Vue.extend({
+/**
+ * 1ページあたりの要素数
+ */
+const pagePar = 10
+
+@Component({
   components: {
     KanbanBoardDelete,
     KanbanBoardEdit,
     KanbanEnterBtn,
     KanbanPagination
-  },
-  data () {
-    return {
-      boards: [
-        {
-          id: 1,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        },
-        {
-          id: 2,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        },
-        {
-          id: 3,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        },
-        {
-          id: 4,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        },
-        {
-          id: 5,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        },
-        {
-          id: 6,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        },
-        {
-          id: 7,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        },
-        {
-          id: 8,
-          name: 'テスト',
-          fromDate: '2021/9/1',
-          toDate: '2021/9/7'
-        }
-      ]
-    }
   }
 })
+export default class KanbanBoardTable extends Vue {
+  @Prop()
+  boards!: Board[];
+
+  page = 1;
+
+  /**
+   * 表示するボードの情報を返却します
+   */
+  get displayBoards () :Board[] {
+    var start = 0
+    var end = pagePar
+    if (this.page >= 2) {
+      start = (this.page - 1) * pagePar
+      end = start + pagePar
+    }
+    return this.boards.slice(start, end)
+  }
+
+  /**
+   * 日付の表示をyyyy/mm/ddで表示するようにします
+   */
+  parseDate (date: string) :string {
+    return date.replaceAll('-', '/')
+  }
+
+  /**
+   * 配列の数と１ページあたりの要素数から、ページングの要素の数を割り出します
+   */
+  get pageLength () :number {
+    return Math.ceil(this.boards.length / pagePar)
+  }
+}
 </script>
 
 <style>

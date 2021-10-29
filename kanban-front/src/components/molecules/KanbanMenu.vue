@@ -1,5 +1,11 @@
 <template>
-  <v-navigation-drawer app clipped expand-on-hover color="amber">
+  <v-navigation-drawer
+    absolute
+    app
+    clipped
+    permanent
+    expand-on-hover
+    color="amber">
     <v-list>
       <v-list-item link to="/">
         <v-list-item-icon>

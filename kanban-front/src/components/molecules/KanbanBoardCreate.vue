@@ -5,26 +5,31 @@
     :value="dialog"
   >
     <template v-slot:activator="{ on }">
-      <kanban-delete-btn
+      <kanban-create-btn
         v-on="on"
         v-on:click="dialogOn"
-      />
+        :bottom="true"
+        :right="true" />
     </template>
     <template v-slot:default>
       <v-card>
         <v-toolbar
-          color="error"
+          color="blue"
           dark
-        >ボード削除</v-toolbar>
-        <v-card-title>以下のボードを削除します</v-card-title>
+        >ボード追加</v-toolbar>
+        <v-card-title>ボードを登録します</v-card-title>
         <v-card-text>
-          <div class="text-h6 pa-1">ID : {{ propBoard.boardId }}</div>
-          <div class="text-h6 pa-1">ボード名 : {{ propBoard.boardName }}</div>
-          <div class="text-h6 pa-1">期間 : {{ propBoard.fromDate }} - {{ propBoard.toDate }}</div>
+          <v-text-field
+            v-model="boardName"
+            :label="'ボード名'"
+            :clearable="true"
+            :autofocus="true"
+          />
+          <kanban-board-term v-model="term" />
         </v-card-text>
         <v-card-actions class="justify-end">
           <kanban-ok-btn
-            v-on:click="updateData"
+            v-on:click="createData"
           />
           <kanban-cancel-btn v-on:click="dialogOff"></kanban-cancel-btn>
         </v-card-actions>
@@ -34,26 +39,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
-import KanbanDeleteBtn from '@/components/atoms/KanbanDeleteBtn.vue'
+import { Component, Vue, Emit, Prop } from 'vue-property-decorator'
+import KanbanCreateBtn from '@/components/atoms/KanbanCreateBtn.vue'
 import KanbanOkBtn from '@/components/atoms/KanbanOkBtn.vue'
 import KanbanCancelBtn from '@/components/atoms/KanbanCancelBtn.vue'
+import KanbanBoardTerm from '@/components/atoms/KanbanBoardTerm.vue'
 import { Board } from '@/store/types'
 import { boardStore } from '@/store/modules/board'
+import board from '@/api/board'
 
 @Component({
   components: {
-    KanbanDeleteBtn,
+    KanbanCreateBtn,
     KanbanOkBtn,
-    KanbanCancelBtn
+    KanbanCancelBtn,
+    KanbanBoardTerm
   }
 })
-export default class KanbanBoardDelete extends Vue {
-  @Prop()
-  propBoard!: Board;
+export default class KanbanBoardCreate extends Vue {
+  boardName = '';
 
-  @Prop()
-  index!: number;
+  term: string[] = [];
 
   dialog = false
 
@@ -65,8 +71,14 @@ export default class KanbanBoardDelete extends Vue {
     this.dialog = false
   }
 
-  updateData () : void {
-    boardStore.callDeleteBoardApi(this.propBoard.boardId)
+  createData () : void {
+    var board: Board = {
+      boardId: 0,
+      boardName: this.boardName,
+      fromDate: this.term[0],
+      toDate: this.term[1]
+    }
+    boardStore.callCreateBoardApi(board)
     this.dialogOff()
   }
 }

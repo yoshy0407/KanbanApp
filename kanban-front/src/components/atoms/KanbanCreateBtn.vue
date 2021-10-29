@@ -6,20 +6,23 @@
         fab
         dark
         small
-        color="indigo"
-        :to="/board/ + boardId"
-        @click="doClick"
+        fixed
+        :bottom="bottom"
+        :left="left"
+        :right="right"
+        color="blue"
+        @click="click"
       >
         <v-icon
           dark
           v-bind="attrs"
           v-on="on"
         >
-          mdi-door-open
+          mdi-plus
         </v-icon>
       </v-btn>
     </template>
-    <span>入る</span>
+    <span>追加</span>
   </v-tooltip>
 </template>
 
@@ -27,17 +30,18 @@
 import { Component, Vue, Emit, Prop } from 'vue-property-decorator'
 
 @Component
-export default class KanbanEnterBtn extends Vue {
-  @Prop()
-  boardId!:string;
+export default class KanbanEditBtn extends Vue {
+  @Prop({ default: false })
+  bottom!: boolean;
 
-  doClick () :void {
-    // this.$router.push({ name: 'KanbanBoard', params: { userId: this.boardId } })
-    this.click()
-  }
+  @Prop({ default: false })
+  left!: boolean;
+
+  @Prop({ default: false })
+  right!: boolean;
 
   @Emit('click')
-  click () :void {
+  click () {
     // 何もしない
   }
 }

@@ -4,14 +4,14 @@
       elevate-on-scroll
       scroll-target="#scrolling-todo-cards"
       dark
-      color="primary"
+      color="teal"
     >
-      <v-toolbar-title>ToDO</v-toolbar-title>
+      <v-toolbar-title>Doing</v-toolbar-title>
       <v-spacer></v-spacer>
     </v-app-bar>
       <kanban-task-sheet
         id="scrolling-todo-cards"
-        :taskList="todoList"
+        :taskList="doingTasks"
       />
   </v-card>
 </template>
@@ -26,9 +26,9 @@ import KanbanTaskSheet from '@/components/molecules/KanbanTaskSheet.vue'
     KanbanTaskSheet
   }
 })
-export default class KanbanTodoList extends Vue {
+export default class KanbanDoingList extends Vue {
   @Prop()
-  todoList!: TaskWrapper[];
+  doingTasks!: TaskWrapper[];
 }
 </script>
 
